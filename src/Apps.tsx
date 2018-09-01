@@ -9,9 +9,6 @@ const component = ({ addApplication, apps, user }: Props) => (
     <div>
         <h1>Apps</h1>
         <div>
-            IsLoggedIn {user.isLoggedIn}
-        </div>
-        <div>
             <button type="button" onClick={() => addApplication({ name: `myapp-${(new Date().getTime())}`})}>
                 Add App
             </button>

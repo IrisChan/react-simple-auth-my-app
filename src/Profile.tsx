@@ -2,25 +2,22 @@ import * as React from 'react'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { login } from './actions'
+import { logout } from './actions'
 import { State } from './types'
 
-const component = ({ login, user }: Props) => (
+const component = ({ logout, user }: Props) => (
     <div>
-        <h1>Login</h1>
-        <div>
-            IsLoggedIn {user.isLoggedIn}
-        </div>
-        <button type="button" onClick={() => login('matt', 'mazzola')}>
-            Log In
+        <h1>Profile</h1>
+        <button type="button" onClick={() => logout()}>
+            Logout
         </button>
     </div>
 )
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dipsatch: any) => {
     return bindActionCreators({
-        login
-    }, dispatch)
+        logout
+    }, dipsatch)
 }
 
 const mapStateToProps = (state: State) => {
@@ -29,8 +26,8 @@ const mapStateToProps = (state: State) => {
     }
 }
 
-const stateProps = returntypeof(mapStateToProps)
-const dispatchProps = returntypeof(mapDispatchToProps)
-
+const stateProps = returntypeof(mapStateToProps);
+const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps;
+
 export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(component);

@@ -1,14 +1,14 @@
-import { ActionObjects } from '../types'
+import { Reducer } from 'redux'
 import { UserState } from '../types'
 import { AT } from '../types/ActionTypes'
-import { Reducer } from 'redux'
+import { ActionObjects } from '../types'
 
 const initialState: UserState = {
     isLoggedIn: false,
     name: ''
 };
 
-const userReducer: Reducer<UserState> = (state = initialState, action: ActionObjects): UserState => {
+const reducer: Reducer<UserState> = (state = initialState, action: ActionObjects): UserState => {
     switch (action.type) {
         case AT.USER_LOGIN:
             return { ...state, isLoggedIn: true, name: action.name };
@@ -19,4 +19,4 @@ const userReducer: Reducer<UserState> = (state = initialState, action: ActionObj
     }
 }
 
-export default userReducer;
+export default reducer;
