@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>React Simple Auth - Redirect</title>
+    </head>
+    <body>
+        <h1>React Simple Auth</h1>
+        <script>
+            setTimeout(() => {
+                const requestKey = window.name
+                window.localStorage.setItem(requestKey, window.location.href)
+                window.close()
+            }, 1000)
+        </script>
+    </body>
+</html>

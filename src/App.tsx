@@ -28,17 +28,16 @@ const userIsAuthenticated = connectedRouterRedirect<any, State>({
   wrapperDisplayName: 'userIsAuthenticated'
 })
 
-// const locationHelper = locationHelperBuilder({})
-// const userIsNotAuthenticated = connectedRouterRedirect<{}, State>({
-//   // redirectPath: (state, ownProps) => locationHelper.getRedirectQueryParam(ownProps) || '/apps',
-//   redirectPath: '/apps',
-//   allowRedirectBack: false,
-//   authenticatedSelector: state => state.user.isLoggedIn,
-//   wrapperDisplayName: 'userIsNotAuthenticated'
-// })
+const userIsNotAuthenticated = connectedRouterRedirect<any, State>({
+  redirectPath: '/apps',
+  // redirectPath: (state, ownProps) => locationHelper.getRedirectQueryParam(ownProps) || '/apps',
+  allowRedirectBack: false,
+  authenticatedSelector: state => !state.user.isLoggedIn,
+  wrapperDisplayName: 'userIsNotAuthenticated'
+})
 
 const ProtectedHome = userIsAuthenticated(Home)
-// const ProtectedLogin = userIsNotAuthenticated(Login)
+const ProtectedLogin = userIsNotAuthenticated(Login)
 const ProtectedApps = userIsAuthenticated(Apps)
 const ProtectedDocs = userIsAuthenticated(Docs)
 const ProtectedProfile = userIsAuthenticated(Profile)
@@ -59,7 +58,7 @@ class Component extends React.Component<Props, {}> {
             </nav>
             <div>
               <Route path="/" exact={true} component={ProtectedHome} />
-              <Route path="/login" component={Login} />
+              <Route path="/login" component={ProtectedLogin} />
               <Route path="/apps" component={ProtectedApps} />
               <Route path="/docs" component={ProtectedDocs} />
               <Route path="/profile" component={ProtectedProfile} />
