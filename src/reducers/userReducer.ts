@@ -3,19 +3,32 @@ import { UserState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { ActionObjects } from '../types'
 
-const initialState: UserState = {
+const unauthenticatedState: UserState = {
     isLoggedIn: false,
+    id: null,
     name: ''
 };
+
+const initialState = {...unauthenticatedState}
+const sessionString = window.localStorage.getItem('session')
+if (typeof sessionString === 'string' && sessionString.length > 0) {
+    const session = JSON.parse(sessionString)
+    initialState.isLoggedIn = true
+    initialState.id = session.user.id
+    initialState.name = session.user.name
+}
 
 const reducer: Reducer<UserState> = (state = initialState, action: ActionObjects): UserState => {
     switch (action.type) {
         case AT.USER_LOGIN:
-            return { ...state, isLoggedIn: true, name: action.name };
+            return { ...state, 
+                    isLoggedIn: true, 
+                    name: action.name
+            }
         case AT.USER_LOGOUT:
-            return { ...initialState };
+            return { ...unauthenticatedState }
         default:
-            return state;
+            return state
     }
 }
 

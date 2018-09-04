@@ -1,10 +1,10 @@
 import { ActionObjects } from '../types'
 import { AT } from '../types/ActionTypes'
 
-export const login = (name: string, password: string): ActionObjects => ({
+export const login = (id: string, name: string): ActionObjects => ({
     type: AT.USER_LOGIN,
-    name,
-    password
+    id,
+    name
 })
 
 export const logout = (): ActionObjects => ({

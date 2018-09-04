@@ -11,8 +11,8 @@ export interface AddAppApplication {
 
 export interface UserLoginAction {
     type: AT.USER_LOGIN,
-    name: string,
-    password: string
+    id: string,
+    name: string
 }
 
 export interface UserLogoutAction {
