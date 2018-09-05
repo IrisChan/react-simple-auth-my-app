@@ -13,9 +13,11 @@ const initialState = {...unauthenticatedState}
 const sessionString = window.localStorage.getItem('session')
 if (typeof sessionString === 'string' && sessionString.length > 0) {
     const session = JSON.parse(sessionString)
-    initialState.isLoggedIn = true
-    initialState.id = session.user.id
-    initialState.name = session.user.name
+    if (session.decodedIdToken) {
+        initialState.isLoggedIn = true
+        initialState.id = session.decodedIdToken.id
+        initialState.name = session.decodedIdToken.name
+    }
 }
 
 const reducer: Reducer<UserState> = (state = initialState, action: ActionObjects): UserState => {
