@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { logout } from './actions'
 import { State } from './types'
+import './Profile.css'
 
 class Component extends React.Component<Props, {}> {
     onClickLogout() {
@@ -20,7 +21,7 @@ class Component extends React.Component<Props, {}> {
         return (
             <div>
                 <h1>Profile: {user.name}</h1>
-                <button type="button" onClick={() => this.onClickLogout()}>Logout</button>
+                <button type="button" className="button-logout" onClick={() => this.onClickLogout()}>Logout</button>
             </div>
         )
     }

@@ -4,15 +4,19 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { login } from './actions'
 import { State } from './types'
-import { microsoftProvider, Session } from './providers/microsoft'
+import { microsoftProvider } from './providers/microsoft'
 import { service } from './services/react-simple-auth'
+import './Login.css'
 
 class Component extends React.Component<Props, {}> {
     async onClickLogin() {
         try {
-            const session = await service.acquireTokenAsync<Session>(microsoftProvider)
-            const { login } = this.props
-            login(session.decodedIdToken.oid, session.decodedIdToken.name)
+            const session = await service.acquireTokenAsync(microsoftProvider)
+            if (!session || !session.decodedIdToken) {
+                return
+            }
+
+            this.props.login(session.decodedIdToken.oid, session.decodedIdToken.name)
         } catch (error) {
             throw error
         }
@@ -20,9 +24,14 @@ class Component extends React.Component<Props, {}> {
 
     render() {
         return (
-            <div>
-                <h1>Login</h1>
-                <button type="button" onClick={() => this.onClickLogin()}>Login</button>
+            <div className="login">
+                <div className="login-providers">
+                    <h4>Login:</h4>
+                    <button type="button" className="login-button" onClick={() => this.onClickLogin()}>
+                        Login
+                        <img src="/images/sign-in-with-microsoft-light.png" alt="Login with Microsoft" />    
+                    </button>
+                </div>
             </div>
         )
     }

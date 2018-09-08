@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { returntypeof } from 'react-redux-typescript'
-import { bindActionCreators } from 'redux'
+import { bindActionCreators, Dispatch } from 'redux'
 import { connect } from 'react-redux'
 import {
   BrowserRouter as Router,
@@ -15,7 +15,7 @@ import Apps from './Apps'
 import Docs from './Docs'
 import Login from './Login'
 import Profile from './Profile'
-// import locationHelperBuilder from 'redux-auth-wrapper/history4/locationHelper'
+import locationHelperBuilder from 'redux-auth-wrapper/history4/locationHelper'
 import { connectedRouterRedirect } from 'redux-auth-wrapper/history4/redirect'
 import { State } from './types'
 import './App.css'
@@ -25,19 +25,19 @@ export const createReduxStore = () => createStore(rootReducer)
 const userIsAuthenticated = connectedRouterRedirect<any, State>({
   redirectPath: '/login',
   authenticatedSelector: state => state.user.isLoggedIn,
-  wrapperDisplayName: 'userIsAuthenticated'
+  wrapperDisplayName: 'UserIsAuthenticated'
 })
 
+const locationHelper = locationHelperBuilder({})
 const userIsNotAuthenticated = connectedRouterRedirect<any, State>({
-  redirectPath: '/apps',
-  // redirectPath: (state, ownProps) => locationHelper.getRedirectQueryParam(ownProps) || '/apps',
+  redirectPath: (state, ownProps) => locationHelper.getRedirectQueryParam(ownProps) || '/apps',
   allowRedirectBack: false,
   authenticatedSelector: state => !state.user.isLoggedIn,
-  wrapperDisplayName: 'userIsNotAuthenticated'
+  wrapperDisplayName: 'UserIsNotAuthenticated'
 })
 
 const ProtectedHome = userIsAuthenticated(Home)
-const ProtectedLogin = userIsNotAuthenticated(Login)
+const RedirectedLogin = userIsNotAuthenticated(Login)
 const ProtectedApps = userIsAuthenticated(Apps)
 const ProtectedDocs = userIsAuthenticated(Docs)
 const ProtectedProfile = userIsAuthenticated(Profile)
@@ -46,19 +46,17 @@ class Component extends React.Component<Props, {}> {
   render() {
     return (
         <Router>
-          <div>
-            <h1>React Auth Test</h1>
-            <nav>
-              <ul>
-                <li><NavLink to="/" exact={true}>Home</NavLink></li>
-                <li><NavLink to="/apps">Apps</NavLink></li>
-                <li><NavLink to="/docs">Docs</NavLink></li>
-                {this.props.user.isLoggedIn && <li><NavLink to="/profile">Profile</NavLink></li>}
-              </ul>
+          <div className="app">
+            <nav className="nav">
+              <div className="title"> React Auth</div>
+              <NavLink to="/" exact={true}>Home</NavLink>
+              <NavLink to="/apps">Apps</NavLink>
+              <NavLink to="/docs">Docs</NavLink>
+              {this.props.user.isLoggedIn && <NavLink to="/profile">Profile</NavLink>}
             </nav>
-            <div>
+            <div className="app_content">
               <Route path="/" exact={true} component={ProtectedHome} />
-              <Route path="/login" component={ProtectedLogin} />
+              <Route path="/login" component={RedirectedLogin} />
               <Route path="/apps" component={ProtectedApps} />
               <Route path="/docs" component={ProtectedDocs} />
               <Route path="/profile" component={ProtectedProfile} />
@@ -69,7 +67,7 @@ class Component extends React.Component<Props, {}> {
   }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: Dispatch<{}>) => {
   return bindActionCreators({
   }, dispatch)
 }

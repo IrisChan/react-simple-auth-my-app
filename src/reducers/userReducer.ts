@@ -2,6 +2,8 @@ import { Reducer } from 'redux'
 import { UserState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { ActionObjects } from '../types'
+import { microsoftProvider } from '../providers/microsoft'
+import { service } from '../services/react-simple-auth'
 
 const unauthenticatedState: UserState = {
     isLoggedIn: false,
@@ -10,14 +12,11 @@ const unauthenticatedState: UserState = {
 };
 
 const initialState = {...unauthenticatedState}
-const sessionString = window.localStorage.getItem('session')
-if (typeof sessionString === 'string' && sessionString.length > 0) {
-    const session = JSON.parse(sessionString)
-    if (session.decodedIdToken) {
-        initialState.isLoggedIn = true
-        initialState.id = session.decodedIdToken.id
-        initialState.name = session.decodedIdToken.name
-    }
+const session = service.restoreSession(microsoftProvider)
+if (session) {
+    initialState.isLoggedIn = true
+    initialState.id = session && session.decodedIdToken ? session.decodedIdToken.oid : null
+    initialState.name = session && session.decodedIdToken ? session.decodedIdToken.name : null
 }
 
 const reducer: Reducer<UserState> = (state = initialState, action: ActionObjects): UserState => {
@@ -28,6 +27,7 @@ const reducer: Reducer<UserState> = (state = initialState, action: ActionObjects
                     name: action.name
             }
         case AT.USER_LOGOUT:
+            service.invalidateSession()
             return { ...unauthenticatedState }
         default:
             return state
