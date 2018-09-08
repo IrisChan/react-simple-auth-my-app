@@ -9,6 +9,15 @@ export interface AddAppApplication {
     app: App
 }
 
+export interface FetchProfile {
+    type: AT.FETCH_PROFILE
+}
+
+export interface FetchProfileFulfilled {
+    type: AT.FETCH_PROFILE_FULFILLED,
+    profile: any
+}
+
 export interface UserLoginAction {
     type: AT.USER_LOGIN,
     id: string,
@@ -19,7 +28,9 @@ export interface UserLogoutAction {
     type: AT.USER_LOGOUT
 }
 
-export type ActionObjects = 
+export type ActionObject = 
     AddAppApplication |
     UserLoginAction | 
-    UserLogoutAction
+    UserLogoutAction |
+    FetchProfile |
+    FetchProfileFulfilled

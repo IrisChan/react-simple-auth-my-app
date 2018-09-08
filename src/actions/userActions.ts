@@ -1,12 +1,12 @@
-import { ActionObjects } from '../types'
+import { ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 
-export const login = (id: string, name: string): ActionObjects => ({
+export const login = (id: string, name: string): ActionObject => ({
     type: AT.USER_LOGIN,
     id,
     name
 })
 
-export const logout = (): ActionObjects => ({
+export const logout = (): ActionObject => ({
     type: AT.USER_LOGOUT
 })
