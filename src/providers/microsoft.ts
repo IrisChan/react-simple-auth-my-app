@@ -78,14 +78,24 @@ export const microsoftProvider: IProvider<Session> = {
 
     validateSession(session: Session): boolean {
         const now = (new Date()).getTime()
-        const expiration = session.decodedIdToken == null ? 1000 : session.decodedIdToken.exp * 1000
-
-        // 15 minutes minimum duration until token expires
+        
+        // With normal JWT tokens you can inspect the `exp` Expiration claim; however,
+        // AAD V2 tokens are opaque and we must assume the expiration
+        // Here we are leveraging the fact that the access token was issued at the same
+        // time as the ID token and can use its `iat` Issued At claim
+        const wellKnowTokenDuration = 1000 * 60 * 60
+        const iat = session && session.decodedIdToken && session.decodedIdToken.iat ? session.decodedIdToken.iat : 10
+        const expiration = (iat * 1000) + wellKnowTokenDuration
+        
         const minimumDuration = 1000 * 60 * 15
         return (expiration - now > minimumDuration)
     }, 
 
     getAccessToken(session: Session, resourceId: string): string {
         return !session.accessToken ? '' : session.accessToken
+    },
+
+    getSignOutUrl(redirectUrl: string): string {
+        return `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${encodeURIComponent(redirectUrl)}`
     }
 }

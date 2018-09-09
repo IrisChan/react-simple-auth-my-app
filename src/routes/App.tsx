@@ -8,7 +8,7 @@ import {
   NavLink
 } from 'react-router-dom'
 import { createStore } from 'redux'
-import rootReducer from './reducers'
+import rootReducer from '../reducers'
 import './App.css'
 import Home from './Home'
 import Apps from './Apps'
@@ -17,7 +17,7 @@ import Login from './Login'
 import Profile from './Profile'
 import locationHelperBuilder from 'redux-auth-wrapper/history4/locationHelper'
 import { connectedRouterRedirect } from 'redux-auth-wrapper/history4/redirect'
-import { State } from './types'
+import { State } from '../types'
 import './App.css'
 
 export const createReduxStore = () => createStore(rootReducer)

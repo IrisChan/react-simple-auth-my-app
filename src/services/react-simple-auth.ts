@@ -1,11 +1,14 @@
 import { guid } from './utilities'
 
+const sessionKey = `session`
+
 export interface IProvider<T> {
     buildAuthorizeUrl(): string
     extractError(redirectUrl: string): Error | undefined
     extractSession(redirectUrl: string): T
     validateSession(session: T): boolean
-    getAccessToken(session: T, resourceId: string): string
+    getAccessToken(session: T, resourceId: string): string,
+    getSignOutUrl(redirectUrl: string): string
 }
 
 export interface IAuthenticationService {
@@ -18,7 +21,7 @@ export interface IAuthenticationService {
 export const service: IAuthenticationService = {
     acquireTokenAsync<T>(provider: IProvider<T>): Promise<T> {
         // create unique request key
-        const requestKey = `requestKey_${guid()}`
+        const requestKey = `react-simple-auth-request-key-${guid()}`
         // set request key as empty in local storage
         window.localStorage.setItem(requestKey, '')
         // Create new window set to authorize url, with unique request key, and centered options
@@ -56,7 +59,7 @@ export const service: IAuthenticationService = {
                 }
 
                 const session = provider.extractSession(redirectUrl)
-                window.localStorage.setItem('session', JSON.stringify(session))
+                window.localStorage.setItem(sessionKey, JSON.stringify(session))
                 resolve(session)
             }
 
@@ -71,20 +74,20 @@ export const service: IAuthenticationService = {
         }
 
         const session: T = JSON.parse(sessionString)
-        if (provider.validateSession(session)) {
-            return session
+        if (!provider.validateSession(session)) {
+            window.localStorage.removeItem(sessionKey)
+            return undefined
         }
 
-        window.localStorage.removeItem('session')
-        return undefined
+        return session
     },
 
     invalidateSession(): void {
-        window.localStorage.removeItem('session')
+        window.localStorage.removeItem(sessionKey)
     },
 
     getAccessToken<T>(provider: IProvider<T>, resourceId: string): string {
-        const sessionString = window.localStorage.getItem('session')
+        const sessionString = window.localStorage.getItem(sessionKey)
         if (typeof sessionString !== 'string' || sessionString.length === 0) {
             throw new Error(`You attempted to get access token for resource id: ${resourceId} from the session but the session did not exist`)
         }

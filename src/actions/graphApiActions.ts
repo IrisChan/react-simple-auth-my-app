@@ -8,7 +8,7 @@ export const requireProfile = (): ActionObject => ({
     type: AT.FETCH_PROFILE
 })
 
-export const receiveProfile = (profile: any): ActionObject =>({
+export const receiveProfile = (profile: any): ActionObject => ({
     type: AT.FETCH_PROFILE_FULFILLED,
     profile
 })
