@@ -89,7 +89,8 @@ export const service: IAuthenticationService = {
     getAccessToken<T>(provider: IProvider<T>, resourceId: string): string {
         const sessionString = window.localStorage.getItem(sessionKey)
         if (typeof sessionString !== 'string' || sessionString.length === 0) {
-            throw new Error(`You attempted to get access token for resource id: ${resourceId} from the session but the session did not exist`)
+            throw new Error(`You attempted to get access token for resource id: 
+                            ${resourceId} from the session but the session did not exist`)
         }
 
         const session: T = JSON.parse(sessionString)

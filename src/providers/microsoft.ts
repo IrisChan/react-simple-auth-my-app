@@ -19,6 +19,7 @@ export interface IdToken {
 
 export interface Session {
     accessToken: string | null
+    expireDurationSeconds: number
     idToken: string | null
     decodedIdToken: IdToken | null
 }
@@ -28,7 +29,7 @@ export const microsoftProvider: IProvider<Session> = {
         return `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?response_type=id_token+token
         &scope=https%3A%2F%2Fgraph.microsoft.com%2Fuser.read%20openid%20profile
         &client_id=606b0d7c-9062-474c-a5b0-cb9a61baf566
-        &redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fredirect.html
+        &redirect_uri=${encodeURIComponent(`${window.location.origin}/redirect.html`)}
         &state=${guid()}
         &nonce=${guid()}
         &client_info=1
@@ -69,25 +70,34 @@ export const microsoftProvider: IProvider<Session> = {
             decodedIdToken = JSON.parse(atob(idToken.split('.')[1]))
         }
         
+        let expireDurationSeconds: number = 3600
+        const expireDurationSecondsMatch = redirectUrl.match(/expires_in=([^&]+)/)
+        if (expireDurationSecondsMatch) {
+            expireDurationSeconds = parseInt(expireDurationSecondsMatch[1], 10)
+        }
+
         return {
             accessToken,
+            expireDurationSeconds,
             idToken,
             decodedIdToken
         }
     },
 
     validateSession(session: Session): boolean {
-        const now = (new Date()).getTime()
+        const now = (new Date()).getTime() / 1000
         
         // With normal JWT tokens you can inspect the `exp` Expiration claim; however,
-        // AAD V2 tokens are opaque and we must assume the expiration
+        // AAD V2 tokens are opaque and we must use the token meta about expiration time
+        // "When you request an access token from the v2.0 endpoint, the v2.0 endpoint also 
+        // returns metadata about the access token for your app to use."
+        // See: https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-tokens
         // Here we are leveraging the fact that the access token was issued at the same
         // time as the ID token and can use its `iat` Issued At claim
-        const wellKnowTokenDuration = 1000 * 60 * 60
         const iat = session && session.decodedIdToken && session.decodedIdToken.iat ? session.decodedIdToken.iat : 10
-        const expiration = (iat * 1000) + wellKnowTokenDuration
+        const expiration = iat + session.expireDurationSeconds
         
-        const minimumDuration = 1000 * 60 * 15
+        const minimumDuration = 60 * 15
         return (expiration - now > minimumDuration)
     }, 
 
